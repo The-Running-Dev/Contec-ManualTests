@@ -1,0 +1,97 @@
+<loading-container [loading]="loading">
+    <div class="col-md-3">
+        <legend>Unit Information</legend>
+        <!-- Unit Info Component -->
+        <unit-info [unitInfo]="Model.UnitInfo"></unit-info>
+        <!-- Operator Info -->
+        <operator-info [Data]="Model.OperatorInfo"></operator-info>
+    </div>
+    <div class="col-md-8">
+        <div *ngIf="TestResults.length > 0">
+            <legend>Results</legend>
+            <p-dataTable [value]="TestResults" [rows]="10" [paginator]="TestResults.length > 10">
+                <p-column field="ID" header="Id"></p-column>
+                <p-column field="TestType" header="Test Type"></p-column>
+                <p-column header="On">
+                    <template let-item="rowData">
+                        {{item.TestDate | dateTimeFormat}}
+                    </template>
+                </p-column>
+                <p-column header="Result">
+                    <template let-item="rowData">
+                        <span *ngIf="item.TestResult === 'P'" class="glyphicon glyphicon-ok"></span>
+                        <span *ngIf="item.TestResult === 'F'" class="glyphicon glyphicon-remove"></span>
+                    </template>
+                </p-column>
+                <p-column header="Code">
+                    <template let-item="rowData">
+                        <span *ngIf="item.FailureCode !== 0">{{item.FailureCode}}</span>
+                    </template>
+                </p-column>
+                <p-column field="FailureMessage" header="Message"></p-column>
+                <p-column field="Quantity" header="Quantity"></p-column>
+                <p-column *ngIf="Service.AreDiagnositcsEnabled()" header="Remove">
+                    <template let-item="rowData" let-index="rowIndex">
+                        <span class="delete-toggle-button">
+                            <p-toggleButton onLabel="" offLabel=""
+                                            [(ngModel)]="item.ConfirmDelete"
+                                            (onChange)="DeleteTestResult(!$event.checked, item)"
+                                            onIcon="glyphicon glyphicon-trash"
+                                            offIcon="glyphicon glyphicon-remove"></p-toggleButton>
+                        </span>
+                    </template>
+                </p-column>
+            </p-dataTable>
+        </div>
+        <div *ngIf="TestResults.length == 0">
+            <legend>No Results</legend>
+        </div>
+        <br/>
+        <div *ngIf="TestResultKeys.length > 0">
+            <legend>Keys</legend>
+            <p-dataTable [value]="TestResultKeys" [rows]="10" [paginator]="TestResultKeys.length > 10">
+                <p-column field="TestId" header="Test Id"></p-column>
+                <p-column field="KeyValue" header="Value"></p-column>
+                <p-column field="CreateDate" header="On">
+                    <template let-item="rowData">
+                        {{item.CreateDate | dateTimeFormat}}
+                    </template>
+                </p-column>
+                <p-column field="CreatedBy" header="By"></p-column>
+                <p-column *ngIf="Service.AreDiagnositcsEnabled()" header="Remove">
+                    <template let-item="rowData" let-index="rowIndex">
+                        <span class="delete-toggle-button">
+                            <p-toggleButton onLabel="" offLabel=""
+                                            [(ngModel)]="item.ConfirmDelete"
+                                            (onChange)="DeleteTestResultKey(!$event.checked, item)"
+                                            onIcon="glyphicon glyphicon-trash"
+                                            offIcon="glyphicon glyphicon-remove"></p-toggleButton>
+                        </span>
+                    </template>
+                </p-column>
+            </p-dataTable>
+        </div>
+        <div *ngIf="TestResultKeys.length == 0">
+            <legend>No Keys</legend>
+        </div>
+        <br/>
+        <button type="button" id="singleTestButton" name="singleTestButton"
+                *ngIf="Service.AllowSingleTest()"
+                (click)="Service.GoToSingleTest(Model.UnitInfo.TrackingId)"
+                class="btn btn-primary btn-lg">Single Test
+        </button>
+        <button type="button" id="testBatchButton" name="testBatchButton"
+                *ngIf="Service.AllowBatchTest()"
+                (click)="Service.GoToTestBatch(Model.UnitInfo.TrackingId)"
+                class="btn btn-primary btn-lg">Tests Batch
+        </button>
+        <button type="reset" id="cancelButton" name="cancelButton"
+                (click)="Service.GoToDone()"
+                class="btn btn-inverse btn-lg">Done
+        </button>
+    </div>
+    <div *ngIf="ApiResponse.IsError && !Service.Status.IsProcessing" class="col-md-8">
+        <legend>Error</legend>
+        <div class="alert alert-danger">{{ApiResponse.Message}}</div>
+    </div>
+</loading-container>

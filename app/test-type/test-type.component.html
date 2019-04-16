@@ -1,0 +1,12 @@
+<div class="form-group">
+  <label class="col-md-4 control-label" for="testType">Test Type</label>
+  <div class="col-md-4">
+    <select id="testType" name="testType"
+            [(ngModel)]="TestType"
+            [disabled]="!IsEnabled"
+            class="form-control" required>
+      <option value="" selected="selected">--Please Select--</option>
+      <option *ngFor="let type of getTestTypes() | async" [value]="type.Id">{{type.Name}}</option>
+    </select>
+  </div>
+</div>

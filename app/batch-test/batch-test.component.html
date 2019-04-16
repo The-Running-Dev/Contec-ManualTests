@@ -1,0 +1,103 @@
+﻿<loading-container [loading]="loading">
+    <div class="col-md-3">
+        <legend>Unit Information</legend>
+        <!-- Unit Info Component -->
+        <unit-info [unitInfo]="Model.UnitInfo"></unit-info>
+        <!-- Operator Info -->
+        <operator-info [Data]="Model.OperatorInfo"></operator-info>
+    </div>
+    <div *ngIf="!HideForm" class="col-md-8">
+        <form class="form-horizontal" (ngSubmit)="Save()" [ngFormModel]="ManualTestForm">
+            <fieldset>
+                <legend>Batch of Tests</legend>
+                <!-- Serial Number -->
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="serialNumber">Serial Number</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <span class="input-group-addon"><span class="glyphicon glyphicon-barcode"></span></span>
+                            <input id="serialNumber" name="serialNumber"
+                                   [(ngModel)]="Model.SerialNumber"
+                                   [disabled]="Service.Status.IsProcessing"
+                                   ngControl="serialNumber"
+                                   #serialNumber="ngForm"
+                                   pattern="[a-zA-Z0-9\-\._\*\s]{1,30}"
+                                   focusElement
+                                   class="form-control" placeholder="Serial Number" type="text" autocomplete="off">
+                            <span class="invalid-entry" *ngIf="!serialNumber.valid && !serialNumber.pristine">
+                            <span class="glyphicon glyphicon-exclamation-sign text-danger"
+                                  title="Invalid Serial Number"></span>
+                            <span class="text-danger">Invalid Serial Number</span>
+                        </span>
+                        </div>
+                        <p class="help-block">Please Enter the Serial Number</p>
+                    </div>
+                </div>
+                <!-- Test Type Component -->
+                <test-type [(ngModel)]="Model.TestTypeId"
+                           [ngFormControl]="ManualTestForm.controls.testType"
+                           [IsEnabled]="!Service.Status.IsProcessing"
+                           required style="border-left: none !important;"></test-type>
+                <!-- Passed or Failed -->
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="serialNumber">Quantity</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <input id="quantity" name="quantity"
+                                   [(ngModel)]="Model.Quantity"
+                                   [disabled]="Service.Status.IsProcessing"
+                                   ngControl="quantity"
+                                   #quantity="ngForm"
+                                   pattern="\d+"
+                                   class="form-control entry-quantity" placeholder="Quantity" type="text" autocomplete="off">
+                            <span class="invalid-entry" *ngIf="!quantity.valid && !quantity.pristine">
+                            <span class="glyphicon glyphicon-exclamation-sign text-danger"
+                                  title="Invalid Quantity"></span>
+                            <span class="text-danger">Invalid Quantity</span>
+                        </span>
+                        </div>
+                        <p class="help-block">Please Enter the Quantity</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-8">
+                        <div class="btn-group" data-toggle="buttons">
+                            <label class="col-md-4 control-label"></label>
+                            <label class="btn btn-primary active btn-success"
+                                   [(ngModel)]="Model.TestResult"
+                                   [ngClass]="{active: Model.TestResult == 1, disabled: !isFormEnabled()}"
+                                   (click)="Save()"
+                                   btnRadio="1">
+                                {{PassButtonText}}
+                                <br/>
+                                <span>Qty: {{Model.NumberPassed}}</span>
+                            </label>
+                            <label class="btn btn-primary btn-danger"
+                                   [(ngModel)]="Model.TestResult"
+                                   [ngClass]="{active: Model.TestResult == 0, disabled: !isFormEnabled()}"
+                                   (click)="Save()"
+                                   btnRadio="0">
+                                {{FailButtonText}}
+                                <br/>
+                                <span>Qty: {{Model.NumberFailed}}</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <!-- Done/Activity -->
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="activityButton"></label>
+                    <div class="col-md-8">
+                        <button type="button" id="activityButton" name="activityButton"
+                                (click)="Service.GoToActivity(Model.UnitInfo.TrackingId)"
+                                class="btn btn-inverse btn-lg">Activity
+                        </button>
+                        <button type="reset" id="doneButton" name="doneButton" (click)="Service.GoToDone()"
+                                class="btn btn-inverse btn-lg">Done
+                        </button>
+                    </div>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+</loading-container>
